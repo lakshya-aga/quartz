@@ -1,12 +1,11 @@
-name: Deploy Quartz site to GitHub Pages
+name: Deploy Quartz site to GitHub Pages (syncs public vault)
 
 on:
   push:
-    branches:
-      - v4
+    branches: [ main ]
   workflow_dispatch:
   schedule:
-    - cron: "0 */6 * * *" # every 6 hours
+    - cron: "0 */6 * * *" # every 6 hours (UTC)
 
 permissions:
   contents: read
@@ -14,7 +13,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: pages
   cancel-in-progress: false
 
 jobs:
@@ -24,64 +23,60 @@ jobs:
       - name: Checkout Quartz repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Fetch all history for git info
+          fetch-depth: 0
 
-      - name: Checkout Obsidian vault repo into ./vault
+      - name: Checkout Obsidian vault into ./vault
         uses: actions/checkout@v4
         with:
           repository: lakshya-aga/ubiquitous-enigma
           path: vault
           fetch-depth: 1
 
-      - name: Sync vault -> Quartz content/
+      - name: Sync vault -> Quartz content (exclude Obsidian/system folders)
         run: |
           rm -rf content
           mkdir -p content
+
           rsync -av --delete vault/ content/ \
             --exclude ".git/" \
             --exclude ".github/" \
             --exclude ".obsidian/" \
-            --exclude ".DS_Store"
+            --exclude ".DS_Store" \
+            --exclude "MolecularNotes-master/" \
+            --exclude "**/_templates/" \
+            --exclude "**/_assets/" \
+            --exclude "**/_scripts/"
 
-          # Ensure Quartz has a homepage at content/index.md
+          # Quartz home page must be content/index.md
           if [ ! -f "content/index.md" ]; then
             if [ -f "content/Welcome.md" ]; then
-              cat > content/index.md << 'EOF'
-              # Home
-
-              Start here: [[Welcome]]
-              EOF
+              printf "%s\n\n%s\n" "# Home" "Start here: [[Welcome]]" > content/index.md
             else
-              cat > content/index.md << 'EOF'
-              # Home
-
-              This site is generated from my Obsidian vault.
-              EOF
+              printf "%s\n\n%s\n" "# Home" "This site is generated from my Obsidian vault." > content/index.md
             fi
           fi
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
 
-      - name: Install Dependencies
+      - name: Install deps
         run: npm ci
 
       - name: Build Quartz
         run: npx quartz build
 
-      - name: Upload artifact
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: public
 
   deploy:
     needs: build
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
+      - id: deployment
         uses: actions/deploy-pages@v4
