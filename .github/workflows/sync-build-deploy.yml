@@ -1,0 +1,50 @@
+name: Sync vault, build, deploy
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */6 * * *"  # every 6 hours (UTC)
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Quartz repo
+        uses: actions/checkout@v4
+
+      - name: Checkout Vault repo into ./vault
+        uses: actions/checkout@v4
+        with:
+          repository: YOUR_USERNAME/YOUR_VAULT_REPO
+          token: ${{ secrets.VAULT_TOKEN }}
+          path: vault
+
+      - name: Copy vault notes into Quartz content
+        run: |
+          rm -rf content
+          mkdir -p content
+          rsync -av --delete vault/ content/ \
+            --exclude ".git/" \
+            --exclude ".obsidian/" \
+            --exclude ".github/"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build Quartz
+        run: npx quartz build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: public
