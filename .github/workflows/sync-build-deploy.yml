@@ -5,7 +5,10 @@ on:
   schedule:
     - cron: "0 */6 * * *"  # every 6 hours (UTC)
   push:
-    branches: [ main ]
+    branches: [ v4, main ]
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -18,7 +21,7 @@ jobs:
       - name: Checkout Vault repo into ./vault
         uses: actions/checkout@v4
         with:
-          repository: YOUR_USERNAME/YOUR_VAULT_REPO
+          repository: lakshya-aga/ubiquitous-enigma
           token: ${{ secrets.VAULT_TOKEN }}
           path: vault
 
