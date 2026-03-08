@@ -22,7 +22,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: lakshya-aga/ubiquitous-enigma
-          token: ${{ secrets.VAULT_TOKEN }}
           path: vault
 
       - name: Copy vault notes into Quartz content
