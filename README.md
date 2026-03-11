@@ -15,3 +15,4 @@ Quartz is a set of tools that helps you publish your [digital garden](https://jz
     <img src="https://cdn.jsdelivr.net/gh/jackyzha0/jackyzha0/sponsorkit/sponsors.svg" />
   </a>
 </p>
+\n<!-- trigger deploy 2026-03-11T10:41:32Z -->
