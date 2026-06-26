@@ -1,5 +1,5 @@
-// Default to light mode unless the visitor has explicitly toggled the theme before.
-const currentTheme = localStorage.getItem("theme") ?? "light"
+const userPref = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark"
+const currentTheme = localStorage.getItem("theme") ?? userPref
 document.documentElement.setAttribute("saved-theme", currentTheme)
 
 const emitThemeChangeEvent = (theme: "light" | "dark") => {
