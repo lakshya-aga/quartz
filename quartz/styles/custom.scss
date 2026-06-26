@@ -1,3 +1,132 @@
 @use "./base.scss";
 
-// put your custom CSS here!
+/* =========================================================================
+   Digital garden theme
+   A warm, reading-first look: a full-height accent sidebar on the left,
+   a comfortable serif body column, and bold accent-coloured headings.
+   Colours are driven by quartz.config.ts; the sidebar brand tone is a
+   constant so it reads the same in light and dark mode.
+   ========================================================================= */
+
+:root {
+  /* Brand tone for the left sidebar (constant across light/dark) */
+  --garden-sidebar: #a23b1f;
+  --garden-sidebar-text: #fbf7f3;
+  --garden-sidebar-muted: rgba(251, 247, 243, 0.62);
+  --garden-sidebar-hover: #ffffff;
+  --garden-sidebar-line: rgba(251, 247, 243, 0.22);
+}
+
+:root[saved-theme="dark"] {
+  --garden-sidebar: #7a2c17;
+}
+
+/* --- Reading column ------------------------------------------------------ */
+
+.page article {
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.page article p {
+  line-height: 1.7;
+}
+
+/* Bold, accent-coloured headings like the reference design */
+.page article h1,
+.page article h2,
+.page article h3 {
+  color: var(--secondary);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.page article h1 {
+  font-size: 2.1rem;
+  line-height: 1.2;
+}
+
+/* --- Left sidebar as a full-height accent panel -------------------------- */
+
+@media all and (min-width: 800px) {
+  .page > #quartz-body .sidebar.left {
+    background-color: var(--garden-sidebar);
+    padding: 5rem 2rem 2rem 2rem;
+    /* Bleed the panel colour out to the left screen edge */
+    box-shadow: -100vw 0 0 var(--garden-sidebar);
+    clip-path: inset(0 0 0 -100vw);
+  }
+
+  /* Site title */
+  .sidebar.left .page-title a {
+    color: var(--garden-sidebar-text);
+    font-weight: 700;
+    line-height: 1.15;
+  }
+
+  /* Generic text / links inside the sidebar */
+  .sidebar.left a,
+  .sidebar.left p,
+  .sidebar.left .page-title {
+    color: var(--garden-sidebar-text);
+  }
+
+  /* Search button */
+  .sidebar.left .search > .search-button {
+    background-color: rgba(251, 247, 243, 0.12);
+    color: var(--garden-sidebar-text);
+  }
+  .sidebar.left .search > .search-button p,
+  .sidebar.left .search > .search-button svg {
+    color: var(--garden-sidebar-text);
+    fill: var(--garden-sidebar-text);
+  }
+
+  /* Dark-mode + reader-mode toggles */
+  .sidebar.left .darkmode svg,
+  .sidebar.left .readermode svg {
+    stroke: var(--garden-sidebar-text);
+    fill: var(--garden-sidebar-text);
+  }
+
+  /* Explorer (nav) header */
+  .sidebar.left button.desktop-explorer h2,
+  .sidebar.left button.mobile-explorer h2 {
+    color: var(--garden-sidebar-text);
+  }
+  .sidebar.left .explorer .fold {
+    stroke: var(--garden-sidebar-text);
+  }
+
+  /* Explorer folders */
+  .sidebar.left .folder-container div > a,
+  .sidebar.left .folder-container div > button span,
+  .sidebar.left .folder-icon {
+    color: var(--garden-sidebar-text);
+  }
+  .sidebar.left .folder-container div > a:hover,
+  .sidebar.left .folder-icon:hover {
+    color: var(--garden-sidebar-hover);
+  }
+
+  /* Explorer file links */
+  .sidebar.left .explorer-content ul li > a {
+    color: var(--garden-sidebar-text);
+    opacity: 0.78;
+  }
+  .sidebar.left .explorer-content ul li > a:hover,
+  .sidebar.left .explorer-content ul li > a.active {
+    color: var(--garden-sidebar-hover);
+    opacity: 1;
+  }
+  .sidebar.left .explorer-content .folder-outer > ul {
+    border-left: 1px solid var(--garden-sidebar-line);
+  }
+}
+
+/* --- Tags styled like bracketed labels ----------------------------------- */
+
+a.internal.tag-link {
+  background-color: var(--highlight);
+  color: var(--secondary);
+}
